@@ -6,18 +6,20 @@
 <title>Editor de Simulação — Régua de WhatsApp</title>
 <style>
   :root{
-    --ink:#1a1d21;
-    --ink-2:#5b636d;
-    --ink-3:#8b949e;
-    --line:#e3e6ea;
-    --bg:#f4f6f8;
-    --card:#ffffff;
-    --accent:#0a7c68;
-    --accent-soft:#e7f4f1;
-    --danger:#b4443c;
-    --warn-bg:#fdf6e7;
-    --warn-line:#e8d9ad;
-    --warn-ink:#7a5c12;
+    --ink:#e8ecef;
+    --ink-2:#a3adb8;
+    --ink-3:#6f7a86;
+    --line:#2b333c;
+    --bg:#11161b;
+    --card:#181f26;
+    --card-2:#1e262e;
+    --accent:#1fb894;
+    --accent-soft:#16332e;
+    --danger:#e2726a;
+    --warn-bg:#2b2517;
+    --warn-line:#4a3f21;
+    --warn-ink:#d9bc72;
+    --shadow:0 10px 32px rgba(0,0,0,.4);
     --wa-bg:#0b141a;
     --wa-header:#202c33;
     --wa-in:#202c33;
@@ -28,19 +30,37 @@
     --wa-line:#2a3942;
     --wa-green:#00a884;
   }
+  html[data-theme="claro"]{
+    --ink:#1a1d21;
+    --ink-2:#5b636d;
+    --ink-3:#8b949e;
+    --line:#e3e6ea;
+    --bg:#f4f6f8;
+    --card:#ffffff;
+    --card-2:#fafbfc;
+    --accent:#0a7c68;
+    --accent-soft:#e7f4f1;
+    --danger:#b4443c;
+    --warn-bg:#fdf6e7;
+    --warn-line:#e8d9ad;
+    --warn-ink:#7a5c12;
+    --shadow:0 10px 32px rgba(15,25,35,.16);
+  }
   *{box-sizing:border-box;margin:0;padding:0}
   body{
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
     background:var(--bg);color:var(--ink);line-height:1.5;
     -webkit-font-smoothing:antialiased;
+    transition:background .2s,color .2s;
   }
   .topbar{
     background:var(--card);border-bottom:1px solid var(--line);
     padding:14px 24px;display:flex;align-items:center;justify-content:space-between;
     gap:16px;flex-wrap:wrap;position:sticky;top:0;z-index:10;
   }
-  .topbar h1{font-size:16px;font-weight:600;letter-spacing:-.01em}
-  .topbar p{font-size:13px;color:var(--ink-3);margin-top:1px}
+  .marca{min-width:0}
+  .topbar h1{font-size:15px;font-weight:600;letter-spacing:-.01em;line-height:1.25}
+  .topbar p{font-size:12.5px;color:var(--ink-3);margin-top:1px}
   .acts{display:flex;gap:8px;flex-wrap:wrap}
   button{font-family:inherit;cursor:pointer}
   .bt{
@@ -48,9 +68,17 @@
     font-size:13.5px;font-weight:500;padding:8px 15px;border-radius:10px;
     transition:border-color .15s,background .15s;
   }
-  .bt:hover{border-color:var(--ink-3)}
-  .bt-main{background:var(--accent);border-color:var(--accent);color:#fff}
-  .bt-main:hover{background:#08695a;border-color:#08695a}
+  .bt:hover{border-color:var(--ink-3);background:var(--card-2)}
+  .bt-main{background:var(--accent);border-color:var(--accent);color:#08231d;font-weight:600}
+  .bt-main:hover{filter:brightness(1.08)}
+  html[data-theme="claro"] .bt-main{color:#fff}
+  .icone{
+    border:1px solid var(--line);background:var(--card);color:var(--ink-2);
+    width:36px;height:36px;border-radius:10px;font-size:15px;
+    display:inline-flex;align-items:center;justify-content:center;
+    transition:border-color .15s,color .15s,background .15s;
+  }
+  .icone:hover{border-color:var(--ink-3);color:var(--ink);background:var(--card-2)}
   .wrap{
     display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:20px;
     padding:20px 24px 40px;align-items:start;max-width:1320px;margin:0 auto;
@@ -59,7 +87,11 @@
     .wrap{grid-template-columns:1fr}
     .preview-col{position:static !important}
   }
-  .panel{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+  .panel{
+    background:var(--card);border:1px solid var(--line);
+    border-radius:14px;overflow:hidden;
+    transition:background .2s,border-color .2s;
+  }
   .panel + .panel{margin-top:16px}
   .panel > h2{
     font-size:13px;font-weight:600;padding:13px 18px;
@@ -80,10 +112,14 @@
   .fld label{display:block;font-size:12.5px;font-weight:500;color:var(--ink-2);margin-bottom:5px}
   .fld .hint{font-weight:400;color:var(--ink-3);font-size:12px}
   input[type=text],textarea{
-    width:100%;font-family:inherit;font-size:13.5px;color:var(--ink);background:var(--card);
+    width:100%;font-family:inherit;font-size:13.5px;color:var(--ink);
+    background:var(--bg);
     border:1px solid var(--line);border-radius:8px;padding:9px 11px;
-    line-height:1.55;resize:vertical;transition:border-color .15s,box-shadow .15s;
+    line-height:1.55;resize:vertical;
+    transition:border-color .15s,box-shadow .15s,background .2s;
   }
+  html[data-theme="claro"] input[type=text],
+  html[data-theme="claro"] textarea{background:var(--card)}
   input[type=text]:focus,textarea:focus{
     outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);
   }
@@ -102,7 +138,7 @@
   .sw input{position:absolute;opacity:0;width:0;height:0}
   .sw i{
     display:block;
-    width:38px;height:22px;border-radius:11px;background:#d4d9de;
+    width:38px;height:22px;border-radius:11px;background:var(--line);
     position:relative;flex-shrink:0;transition:background .18s;
   }
   .sw i::after{
@@ -117,7 +153,7 @@
 
   .item{
     border:1px solid var(--line);border-radius:9px;
-    padding:11px 12px;margin-bottom:9px;background:#fafbfc;
+    padding:11px 12px;margin-bottom:9px;background:var(--card-2);
   }
   .item-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px}
   .item-top span{font-size:12.5px;font-weight:600;color:var(--ink-2)}
@@ -126,7 +162,7 @@
     font-size:12.5px;padding:3px 7px;border-radius:6px;
     transition:color .15s,background .15s;
   }
-  .rm:hover{color:var(--danger);background:#fbeceb}
+  .rm:hover{color:var(--danger);background:var(--accent-soft)}
   .add{
     width:100%;border:1px dashed var(--line);background:none;
     color:var(--accent);font-size:13px;font-weight:500;
@@ -140,7 +176,8 @@
   .preview-col{position:sticky;top:78px}
   .phone{
     background:var(--wa-bg);border-radius:26px;overflow:hidden;
-    box-shadow:0 10px 32px rgba(15,25,35,.16);
+    box-shadow:var(--shadow);
+    border:1px solid var(--line);
     display:flex;flex-direction:column;height:min(680px,calc(100vh - 140px));
   }
   .ph-top{background:var(--wa-header);padding:13px 15px;display:flex;align-items:center;gap:11px;flex-shrink:0}
@@ -150,7 +187,18 @@
   }
   .ph-who{color:var(--wa-text);font-size:14.5px;font-weight:500;line-height:1.25;min-width:0}
   .ph-who small{display:block;color:var(--wa-dim);font-size:11.5px;font-weight:400;margin-top:1px}
-  .thread{flex:1;overflow-y:auto;padding:14px 11px 8px;display:flex;flex-direction:column;gap:7px}
+  .thread{
+    flex:1;overflow-y:auto;padding:14px 11px 8px;
+    display:flex;flex-direction:column;gap:7px;
+    scrollbar-width:thin;scrollbar-color:transparent transparent;
+    scroll-behavior:smooth;overscroll-behavior:contain;
+  }
+  .thread:hover{scrollbar-color:rgba(134,150,160,.3) transparent}
+  .thread::-webkit-scrollbar{width:5px}
+  .thread::-webkit-scrollbar-track{background:transparent}
+  .thread::-webkit-scrollbar-thumb{background:transparent;border-radius:3px;transition:background .2s}
+  .thread:hover::-webkit-scrollbar-thumb{background:rgba(134,150,160,.28)}
+  .thread::-webkit-scrollbar-thumb:hover{background:rgba(134,150,160,.5)}
   .msg{
     max-width:85%;padding:7px 10px 5px;border-radius:8px;
     font-size:13.6px;line-height:1.45;color:var(--wa-text);
@@ -208,6 +256,16 @@
   }
   .replay:hover{border-color:var(--wa-dim);color:var(--wa-text)}
   .tip{font-size:12.5px;color:var(--ink-3);margin-top:11px;text-align:center;line-height:1.5}
+  .tema-solto{
+    position:fixed;top:14px;right:14px;z-index:20;
+    width:30px;height:30px;border-radius:50%;
+    border:1px solid var(--line);background:transparent;
+    color:var(--ink-3);font-size:13px;line-height:1;
+    display:flex;align-items:center;justify-content:center;
+    opacity:.45;transition:opacity .18s,color .18s,border-color .18s;
+  }
+  .tema-solto:hover{opacity:1;color:var(--ink-2);border-color:var(--ink-3)}
+  .tema-solto:focus-visible{opacity:1;outline:2px solid var(--accent);outline-offset:2px}
   @media (prefers-reduced-motion:reduce){
     .msg{animation:none}
     .typing i{animation:none;opacity:.6}
@@ -217,13 +275,14 @@
 <body>
 
 <div class="topbar">
-  <div>
-    <h1>Editor de Simulação — Régua de WhatsApp</h1>
-    <p>Altere os campos à esquerda e veja a conversa mudar na hora</p>
+  <div class="marca">
+    <h1>Simulador de Réguas</h1>
+    <p>CxTech · Wiser Educação</p>
   </div>
   <div class="acts">
-    <button class="bt" id="reset">Restaurar exemplo</button>
-    <button class="bt bt-main" id="download">Baixar simulação</button>
+    <button class="icone" id="tema" title="Alternar tema" aria-label="Alternar tema">☾</button>
+    <button class="bt" id="reset">Restaurar</button>
+    <button class="bt bt-main" id="download">Baixar</button>
   </div>
 </div>
 
@@ -245,7 +304,7 @@
           </div>
         </div>
         <div class="fld">
-          <label>Nome do contato <span class="hint">— use {{nome}} nas mensagens</span></label>
+          <label>Nome do contato <span class="hint">— use {{first_name}} ou {{nome}} nas mensagens</span></label>
           <input type="text" id="contato">
         </div>
         <div class="fld">
@@ -287,8 +346,12 @@
           <textarea id="rNeu" rows="3"></textarea>
         </div>
         <div class="fld">
-          <label>Se a resposta for negativa <span class="hint">— terceiro botão; aqui o fluxo encerra</span></label>
+          <label>Se a resposta for negativa <span class="hint">— terceiro botão; acolhe e pergunta o que houve</span></label>
           <textarea id="rNeg" rows="4"></textarea>
+        </div>
+        <div class="fld">
+          <label>Depois que a pessoa contar o que houve <span class="hint">— aqui o fluxo encerra</span></label>
+          <textarea id="rNegFim" rows="4"></textarea>
         </div>
       </div>
     </div>
@@ -394,31 +457,31 @@
 
 <script>
 const PADRAO = {
-  ia1nome:'Maria Luísa',
+  ia1nome:'Márcia',
   ia1conta:'MLS Festival',
-  contato:'Ana',
-  temIA2:true,
-  template:'Oi, {{nome}}! Aqui é a Maria Luísa, do atendimento do MLS Festival.\n\nJá se passou um mês desde o nosso encontro e a sua opinião ajuda muito a MLS a construir as próximas edições.\n\nDe 0 a 10, que nota você dá para o MLS Festival 2026?',
+  contato:'Francisco',
+  temIA2:false,
+  template:'Oi, {{first_name}}! Aqui é a Márcia, do atendimento do MLS Festival.\n\nJá se passou um mês desde o nosso encontro e a sua opinião ajuda muito a MLS a construir as próximas edições.\n\nDe 0 a 10, que nota você dá para o MLS Festival 2026?',
   botoes:['9 a 10','7 a 8','0 a 6'],
-  rPos:'Que bom, {{nome}}! Obrigada pela sua nota 🙌',
-  rNeu:'Obrigada pela sua nota, {{nome}}! Anotado por aqui 🙌',
-  rNeg:'Obrigada por compartilhar, {{nome}}. Sinto muito que a experiência não tenha sido como você esperava.\n\nVou direcionar o seu atendimento para o time responsável, que vai te ouvir com calma por aqui mesmo.',
-  oferta:'Aproveitando o nosso contato: a ATrinca, formada por Flávio Augusto, Joel Jota e Caio Carneiro, abriu candidaturas para a Formação de Mentores.\n\nÉ um programa para quem já tem experiência e quer transformar esse conhecimento em uma mentoria estruturada, com método, escala e recorrência.\n\nQuer conhecer os detalhes? Se quiser, me responde com um sim. Se preferir deixar para depois, é só me mandar um não 🙌',
-  kSim:'sim, quero, claro, bora, gostaria, pode, vamos, s',
-  kNao:'não, nao, agora não, agora nao, depois, obrigado, n',
+  rPos:'Que nota maravilhosa, {{nome}}! Fico muito feliz em saber que sua experiência no MLS Festival foi tão positiva. Obrigada por compartilhar!',
+  rNeu:'Obrigada pela sua nota, {{nome}}! Fico feliz que tenha curtido o Festival.',
+  rNeg:'Sinto muito que a sua experiência no Festival não tenha sido como você esperava, {{nome}}.\n\nO que aconteceu que fez a sua experiência não ser tão boa?',
+  rNegFim:'Sinto muito por todos esses transtornos, {{nome}}. É realmente frustrante passar por tantas filas e ainda não conseguir aproveitar o conteúdo com o conforto que você esperava.\n\nAgradeço muito pela sua sinceridade ao contar esses detalhes. Seu feedback é fundamental e será registrado para que a gente possa melhorar a organização e a experiência nas próximas edições.\n\nDesejo que em uma próxima oportunidade sua vivência seja muito melhor.',
+  oferta:'Aproveitando o nosso contato, a ATrinca, do Flávio Augusto, do Joel Jota e do Caio Carneiro, abriu as candidaturas para a Formação de Mentores. Quer conhecer os detalhes?',
+  kSim:'sim, quero, claro, bora, gostaria, pode, vamos, manda, s',
+  kNao:'não, nao, agora não, agora nao, depois, obrigado, obrigada, n',
   rDuvida:'Só pra eu entender certinho: quer que eu te conte os detalhes agora? Me responde com um sim ou um não 🙌',
-  rRecusa:'Sem problemas, {{nome}}. Obrigada pela sua participação no MLS Festival!',
-  detalhe:'A Formação é conduzida pelos três: Joel, Caio e Flávio.\n\nÉ composta por reuniões presenciais, plataforma com bastante conteúdo e muito mais.\n\nPara dar prosseguimento, vou te passar para a Márcia, acessora da Formação, que te perguntará algumas coisas para ver se fará sentido para você. Ela assumirá esta conversa a partir daqui.\n\nMuito obrigada pela atenção e tenha um excelente dia!',
+  rRecusa:'Sem problemas, {{nome}}! Quando fizer sentido pra você, é só me chamar por aqui. Sucesso e um abraço!',
+  detalhe:'',
   espera:'3',
-  ia2nome:'Márcia',
-  ia2conta:'Formação de Mentores',
-  q1:'Oi! Aqui é a Márcia, acessora da Formação de Mentores 😊\n\nA Maria Luísa me passou o seu contato e vou seguir com você a partir daqui. São algumas perguntas rápidas pra eu entender se a Formação faz sentido pra você.\n\nPra começar, me conta: qual é a sua profissão e em que área você atua hoje?',
+  ia2nome:'',
+  ia2conta:'',
+  q1:'A Formação é onde o Flávio, o Joel e o Caio ensinam você a transformar tudo o que já viveu e aprendeu numa mentoria de alto nível, virando referência no que faz. É o programa para quem já tem experiência e quer transformar esse conhecimento numa mentoria estruturada, com método, escala e recorrência. Pra isso, você tem um encontro presencial com os três, uma plataforma com bastante conteúdo e muito mais.\n\nAgora vou te fazer três perguntinhas rápidas para entendermos se faz sentido a Formação de Mentores para você. Pra começar, qual é a sua profissão e a área em que você atua hoje?',
   perguntas:[
-    'Entendi. E há quanto tempo você atua nessa área?',
-    'Certo. Qual foi o seu faturamento no ano passado?',
-    'O Flávio, o Joel e o Caio gostam de conhecer cada pessoa antes. Me conta um pouco da sua trajetória e do que você já construiu que teria valor pra ensinar numa mentoria?'
+    'E há quanto tempo você atua nessa área?',
+    'Entendi, {{nome}}. Pra entender o momento do seu negócio, me conta uma média do faturamento no último ano? Pode ser um valor aproximado e, caso não queira informar, é só me avisar que concluímos por aqui.'
   ],
-  fim:'Prontinho, {{nome}}! Sua aplicação está registrada.\n\nEla passa agora por análise e, se for aprovada, um dos nossos líderes entra em contato com você por aqui.'
+  fim:'Sem problemas, entendo perfeitamente que esse é um dado mais reservado.\n\nSuas informações foram registradas e agora vão passar pela análise do nosso time. Se o seu perfil for aprovado, um dos líderes do projeto entra em contato com você por aqui.\n\nAgradeço muito pela nossa conversa e desejo muito sucesso nos seus negócios. Um abraço!'
 };
 
 const MAX_PERG = 9, MAX_BTN = 3;
@@ -521,7 +584,9 @@ let t = 0, aoResponder = null, c = PADRAO, timers = [];
 
 function pausa(ms, fn){ timers.push(setTimeout(fn, ms)); }
 function limparTimers(){ timers.forEach(clearTimeout); timers = []; }
-function txt(s){ return (s || '').replace(/\{\{nome\}\}/g, c.contato || 'você'); }
+function txt(s){
+  return (s || '').replace(/\{\{\s*(nome|first_name|name)\s*\}\}/gi, c.contato || 'você');
+}
 
 function iniciais(nome){
   const p = (nome || '').trim().split(/\s+/).filter(Boolean);
@@ -532,6 +597,12 @@ function iniciais(nome){
 function hora(){
   const d = new Date(); d.setHours(10, 12 + t++, 0);
   return d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+}
+
+function descer(){
+  requestAnimationFrame(()=>{
+    requestAnimationFrame(()=>{ thread.scrollTop = thread.scrollHeight; });
+  });
 }
 
 function bolha(texto, lado, botoesMsg){
@@ -555,7 +626,7 @@ function bolha(texto, lado, botoesMsg){
   h.className = 'hr'; h.textContent = hora();
   d.appendChild(h);
   thread.appendChild(d);
-  thread.scrollTop = thread.scrollHeight;
+  descer();
 }
 
 function digitando(ms, fn){
@@ -563,7 +634,7 @@ function digitando(ms, fn){
   d.className = 'typing';
   d.innerHTML = '<i></i><i></i><i></i>';
   thread.appendChild(d);
-  thread.scrollTop = thread.scrollHeight;
+  descer();
   pausa(ms, ()=>{ d.remove(); fn(); });
 }
 
@@ -615,10 +686,20 @@ function rodar(){
 
 function faixa(tipo){
   if(tipo === 'neg'){
-    etapa.textContent = 'Resposta negativa — sem convite';
+    etapa.textContent = 'Resposta negativa — acolhendo';
     digitando(1100, ()=>{
       bolha(c.rNeg, 'in');
-      etapa.textContent = 'Encerrado na resposta negativa';
+      if(!(c.rNegFim || '').trim()){
+        etapa.textContent = 'Encerrado na resposta negativa';
+        return;
+      }
+      etapa.textContent = 'Aguardando o relato';
+      esperarTexto(()=>{
+        digitando(1400, ()=>{
+          bolha(c.rNegFim, 'in');
+          etapa.textContent = 'Feedback registrado — encerrado';
+        });
+      });
     });
     return;
   }
@@ -725,6 +806,12 @@ let deb;
 function agendar(){ clearTimeout(deb); deb = setTimeout(rodar, 400); }
 
 if(modoSimulacao){
+  const bt = el('tema');
+  if(bt){
+    bt.className = 'tema-solto';
+    bt.removeAttribute('title');
+    document.body.appendChild(bt);
+  }
   document.querySelector('.topbar').remove();
   el('editor').remove();
   const w = document.querySelector('.wrap');
@@ -758,6 +845,24 @@ if(modoSimulacao){
   el('reset').onclick = ()=>{ carregar(PADRAO); rodar(); };
   el('download').onclick = exportar;
 }
+
+/* ---------- Tema ---------- */
+
+(function(){
+  const bt = el('tema');
+  if(!bt) return;
+  const claroPreferido = window.matchMedia
+    && window.matchMedia('(prefers-color-scheme: light)').matches;
+  aplicar(claroPreferido ? 'claro' : 'escuro');
+  bt.onclick = ()=> aplicar(
+    document.documentElement.getAttribute('data-theme') === 'claro' ? 'escuro' : 'claro'
+  );
+  function aplicar(t){
+    if(t === 'claro') document.documentElement.setAttribute('data-theme','claro');
+    else document.documentElement.removeAttribute('data-theme');
+    bt.textContent = t === 'claro' ? '☾' : '☀';
+  }
+})();
 
 el('replay').onclick = rodar;
 rodar();
